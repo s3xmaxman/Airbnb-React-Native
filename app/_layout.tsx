@@ -96,6 +96,7 @@ function RootLayoutNav() {
         options={{
           title: "Login or Sign Up",
           presentation: "transparentModal",
+          headerTitleAlign: "center",
           headerTitleStyle: { fontFamily: "mon-sb" },
           headerLeft: () => (
             <TouchableOpacity onPress={() => router.back()}>
