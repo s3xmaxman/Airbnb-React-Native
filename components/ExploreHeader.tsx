@@ -12,37 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { Link } from "expo-router";
-
-const categories = [
-  {
-    name: "Tiny homes",
-    icon: "home",
-  },
-  {
-    name: "Cabins",
-    icon: "house-siding",
-  },
-  {
-    name: "Trending",
-    icon: "local-fire-department",
-  },
-  {
-    name: "Play",
-    icon: "videogame-asset",
-  },
-  {
-    name: "City",
-    icon: "apartment",
-  },
-  {
-    name: "Beachfront",
-    icon: "beach-access",
-  },
-  {
-    name: "Countryside",
-    icon: "nature-people",
-  },
-];
+import { categories } from "@/constants";
 
 interface Props {
   onCategoryChanged: (category: string) => void;
@@ -56,8 +26,8 @@ const ExploreHeader = ({ onCategoryChanged }: Props) => {
   const selectCategory = (index: number) => {
     const selected = itemsRef.current[index];
     setActiveIndex(index);
-    selected?.measure((x) => {
-      scrollRef.current?.scrollTo({ x: x - 16, y: 0, animated: true });
+    selected?.measure((x, y, width, height, pageX, pageY) => {
+      scrollRef.current?.scrollTo({ x: pageX - 16, y: 0, animated: true });
     });
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     onCategoryChanged(categories[index].name);
@@ -91,7 +61,7 @@ const ExploreHeader = ({ onCategoryChanged }: Props) => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{
             alignItems: "center",
-            gap: 20,
+            gap: 16,
             paddingHorizontal: 16,
           }}
         >
@@ -130,7 +100,6 @@ const ExploreHeader = ({ onCategoryChanged }: Props) => {
 
 const styles = StyleSheet.create({
   container: {
-    top: 35,
     backgroundColor: "#fff",
     height: 130,
     elevation: 2,
