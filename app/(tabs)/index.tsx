@@ -10,7 +10,7 @@ const index = () => {
     setCategory(category);
   };
   return (
-    <View style={{ flex: 1, marginTop: 80 }}>
+    <View style={{ flex: 1, marginTop: 0 }}>
       <Stack.Screen
         options={{
           header: () => <ExploreHeader onCategoryChanged={onDataChange} />,
