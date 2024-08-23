@@ -60,6 +60,7 @@ const ExploreHeader = ({ onCategoryChanged }: Props) => {
           ref={scrollRef}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{
+            flexDirection: "row",
             alignItems: "center",
             gap: 16,
             paddingHorizontal: 16,
@@ -101,7 +102,7 @@ const ExploreHeader = ({ onCategoryChanged }: Props) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#fff",
-    height: 130,
+    height: 140,
     elevation: 2,
     shadowColor: "#000",
     shadowOpacity: 0.1,
