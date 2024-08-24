@@ -5,6 +5,8 @@ import { useMemo } from "react";
 import ExploreHeader from "@/components/ExploreHeader";
 import Listings from "@/components/Listings";
 import listingsData from "@/assets/data/airbnb-listings.json";
+import listingsDataGeo from "@/assets/data/airbnb-listings.geo.json";
+import ListingsMap from "@/components/ListingsMap";
 
 const index = () => {
   const items = useMemo(() => listingsData as any, []);
@@ -20,7 +22,8 @@ const index = () => {
           header: () => <ExploreHeader onCategoryChanged={onDataChange} />,
         }}
       />
-      <Listings listings={items} refresh={0} category={category} />
+      {/* <Listings listings={items} refresh={0} category={category} /> */}
+      <ListingsMap listings={listingsDataGeo} />
     </View>
   );
 };
