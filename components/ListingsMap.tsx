@@ -24,6 +24,35 @@ const ListingsMap = ({ listings }: Props) => {
   const onMarkerSelected = (event: any) => {
     router.push(`/listing/${event.properties.id}`);
   };
+
+  const renderCluster = (cluster: any) => {
+    const { id, geometry, onPress, properties } = cluster;
+
+    const points = properties.point_count;
+    return (
+      <Marker
+        key={`cluster-${id}`}
+        coordinate={{
+          longitude: geometry.coordinates[0],
+          latitude: geometry.coordinates[1],
+        }}
+        onPress={onPress}
+      >
+        <View style={styles.marker}>
+          <Text
+            style={{
+              color: "#000",
+              textAlign: "center",
+              fontFamily: "mon-sb",
+            }}
+          >
+            {points}
+          </Text>
+        </View>
+      </Marker>
+    );
+  };
+
   return (
     <View style={defaultStyles.container}>
       <MapView
@@ -35,6 +64,7 @@ const ListingsMap = ({ listings }: Props) => {
         clusterColor="#fff"
         clusterTextColor="#000"
         clusterFontFamily="mon-sb"
+        renderCluster={renderCluster}
       >
         {listings.features.map((item: any) => (
           <Marker
