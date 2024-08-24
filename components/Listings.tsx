@@ -17,13 +17,24 @@ import {
 
 interface Props {
   listings: any[];
-  refresh: number;
+  refresh?: number;
   category: string;
 }
 
-const Listings = ({ listings, refresh, category }: Props) => {
+const Listings = ({ listings: items, refresh, category }: Props) => {
   const listRef = useRef<BottomSheetFlatListMethods>(null);
   const [loading, setLoading] = useState<boolean>(false);
+
+  // Update the view to scroll the list back top
+  useEffect(() => {
+    if (refresh) {
+      scrollListTop();
+    }
+  }, [refresh]);
+
+  const scrollListTop = () => {
+    listRef.current?.scrollToOffset({ offset: 0, animated: true });
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -33,51 +44,56 @@ const Listings = ({ listings, refresh, category }: Props) => {
     }, 200);
   }, [category]);
 
-  const renderRow: ListRenderItem<any> = ({ item }) => {
-    return (
-      <Link href={`/listing/${item.id}`} asChild>
-        <TouchableOpacity>
-          <Animated.View
-            style={styles.listing}
-            entering={FadeInRight}
-            exiting={FadeOutLeft}
+  const renderRow: ListRenderItem<any> = ({ item }) => (
+    <Link href={`/listing/${item.id}`} asChild>
+      <TouchableOpacity>
+        <Animated.View
+          style={styles.listing}
+          entering={FadeInRight}
+          exiting={FadeOutLeft}
+        >
+          <Animated.Image
+            source={{ uri: item.medium_url }}
+            style={styles.image}
+          />
+          <TouchableOpacity
+            style={{ position: "absolute", right: 30, top: 30 }}
           >
-            <Animated.Image
-              source={{ uri: item.medium_url }}
-              style={styles.image}
-            />
-            <TouchableOpacity
-              style={{ position: "absolute", right: 30, top: 30 }}
-            >
-              <Ionicons name="heart-outline" size={24} color="#000" />
-            </TouchableOpacity>
-            <View
-              style={{ flexDirection: "row", justifyContent: "space-between" }}
-            >
-              <Text style={{ fontSize: 16, fontFamily: "mon-sb" }}>
-                {item.name}
-              </Text>
-              <View style={{ flexDirection: "row", gap: 4 }}>
-                <Ionicons name="star" size={16} />
-                <Text style={{ fontFamily: "mon-sb" }}>
-                  {item.review_scores_rating / 20}
-                </Text>
-              </View>
-            </View>
-            <Text style={{ fontFamily: "mon" }}>{item.room_type}</Text>
+            <Ionicons name="heart-outline" size={24} color="#000" />
+          </TouchableOpacity>
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <Text style={{ fontSize: 16, fontFamily: "mon-sb" }}>
+              {item.name}
+            </Text>
             <View style={{ flexDirection: "row", gap: 4 }}>
-              <Text style={{ fontFamily: "mon-sb" }}>€ {item.price}</Text>
-              <Text style={{ fontFamily: "mon" }}>night</Text>
+              <Ionicons name="star" size={16} />
+              <Text style={{ fontFamily: "mon-sb" }}>
+                {item.review_scores_rating / 20}
+              </Text>
             </View>
-          </Animated.View>
-        </TouchableOpacity>
-      </Link>
-    );
-  };
+          </View>
+          <Text style={{ fontFamily: "mon" }}>{item.room_type}</Text>
+          <View style={{ flexDirection: "row", gap: 4 }}>
+            <Text style={{ fontFamily: "mon-sb" }}>€ {item.price}</Text>
+            <Text style={{ fontFamily: "mon" }}>night</Text>
+          </View>
+        </Animated.View>
+      </TouchableOpacity>
+    </Link>
+  );
 
   return (
     <View style={defaultStyles.container}>
-      <Text>Listings</Text>
+      <BottomSheetFlatList
+        renderItem={renderRow}
+        data={loading ? [] : items}
+        ref={listRef}
+        ListHeaderComponent={
+          <Text style={styles.info}>{items.length} homes</Text>
+        }
+      />
     </View>
   );
 };

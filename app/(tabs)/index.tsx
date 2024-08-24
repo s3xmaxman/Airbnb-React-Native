@@ -7,6 +7,8 @@ import Listings from "@/components/Listings";
 import listingsData from "@/assets/data/airbnb-listings.json";
 import listingsDataGeo from "@/assets/data/airbnb-listings.geo.json";
 import ListingsMap from "@/components/ListingsMap";
+import ListingsBottomSheet from "@/components/ListingsBottomSheet";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const index = () => {
   const items = useMemo(() => listingsData as any, []);
@@ -16,15 +18,17 @@ const index = () => {
     setCategory(category);
   };
   return (
-    <View style={{ flex: 1, marginTop: 150 }}>
-      <Stack.Screen
-        options={{
-          header: () => <ExploreHeader onCategoryChanged={onDataChange} />,
-        }}
-      />
-      {/* <Listings listings={items} refresh={0} category={category} /> */}
-      <ListingsMap listings={listingsDataGeo} />
-    </View>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <View style={{ flex: 1, marginTop: 150 }}>
+        <Stack.Screen
+          options={{
+            header: () => <ExploreHeader onCategoryChanged={onDataChange} />,
+          }}
+        />
+        <ListingsMap listings={listingsDataGeo} />
+        <ListingsBottomSheet listings={items} category={category} />
+      </View>
+    </GestureHandlerRootView>
   );
 };
 
