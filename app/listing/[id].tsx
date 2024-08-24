@@ -26,17 +26,157 @@ const IMG_HEIGHT = 300;
 
 const Page = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
-
   const listing = (listingsData as any[]).find((listing) => listing.id === id);
+  const scrollRef = useAnimatedRef<Animated.ScrollView>();
+  const scrollOffset = useScrollViewOffset(scrollRef);
+  const navigation = useNavigation();
+
+  const shareListing = async () => {
+    try {
+      await Share.share({
+        title: listing.title,
+        url: listing.listing_url,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: "",
+      headerTransparent: true,
+
+      headerBackground: () => (
+        <Animated.View
+          style={[headerAnimatedStyle, styles.header]}
+        ></Animated.View>
+      ),
+      headerRight: () => (
+        <View style={styles.bar}>
+          <TouchableOpacity style={styles.roundButton} onPress={shareListing}>
+            <Ionicons name="share-outline" size={22} color={"#000"} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.roundButton}>
+            <Ionicons name="heart-outline" size={22} color={"#000"} />
+          </TouchableOpacity>
+        </View>
+      ),
+      headerLeft: () => (
+        <TouchableOpacity
+          style={styles.roundButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="chevron-back" size={24} color={"#000"} />
+        </TouchableOpacity>
+      ),
+    });
+  }, []);
+
+  // 画像のアニメーションスタイルを定義する関数
+  const imageAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          // スクロールオフセットに基づいて画像を垂直方向に移動
+          translateY: interpolate(
+            scrollOffset.value, // スクロールオフセットの値
+            [-IMG_HEIGHT, 0, IMG_HEIGHT, IMG_HEIGHT], // 入力範囲
+            [-IMG_HEIGHT / 2, 0, IMG_HEIGHT * 0.75] // 出力範囲
+          ),
+        },
+        {
+          // スクロールオフセットに基づいて画像を拡大縮小
+          scale: interpolate(
+            scrollOffset.value, // スクロールオフセットの値
+            [-IMG_HEIGHT, 0, IMG_HEIGHT], // 入力範囲
+            [2, 1, 0.75] // 出力範囲
+          ),
+        },
+      ],
+    };
+  });
+
+  const headerAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: interpolate(scrollOffset.value, [0, IMG_HEIGHT / 1.5], [0, 1]),
+    };
+  }, []);
 
   return (
     <View style={styles.container}>
-      <Animated.ScrollView>
+      <Animated.ScrollView
+        contentContainerStyle={{ paddingBottom: 100 }}
+        ref={scrollRef}
+        scrollEventThrottle={16}
+      >
         <Animated.Image
           source={{ uri: listing.xl_picture_url }}
-          style={styles.image}
+          style={[styles.image, imageAnimatedStyle]}
+          resizeMode="cover"
         />
+
+        <View style={styles.infoContainer}>
+          <Text style={styles.name}>{listing.name}</Text>
+          <Text style={styles.location}>
+            {listing.room_type} in {listing.smart_location}
+          </Text>
+          <Text style={styles.rooms}>
+            {listing.guests_included} guests · {listing.bedrooms} bedrooms ·{" "}
+            {listing.beds} bed · {listing.bathrooms} bathrooms
+          </Text>
+          <View style={{ flexDirection: "row", gap: 4 }}>
+            <Ionicons name="star" size={16} />
+            <Text style={styles.ratings}>
+              {listing.review_scores_rating / 20} · {listing.number_of_reviews}{" "}
+              reviews
+            </Text>
+          </View>
+          <View style={styles.divider} />
+
+          <View style={styles.hostView}>
+            <Image
+              source={{ uri: listing.host_picture_url }}
+              style={styles.host}
+            />
+
+            <View>
+              <Text style={{ fontWeight: "500", fontSize: 16 }}>
+                Hosted by {listing.host_name}
+              </Text>
+              <Text>Host since {listing.host_since}</Text>
+            </View>
+          </View>
+
+          <View style={styles.divider} />
+
+          <Text style={styles.description}>{listing.description}</Text>
+        </View>
       </Animated.ScrollView>
+
+      <Animated.View
+        style={defaultStyles.footer}
+        entering={SlideInDown.delay(200)}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <TouchableOpacity style={styles.footerText}>
+            <Text style={styles.footerPrice}>€{listing.price}</Text>
+            <Text>night</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[defaultStyles.btn, { paddingRight: 20, paddingLeft: 20 }]}
+          >
+            <Text style={defaultStyles.btnText}>Reserve</Text>
+          </TouchableOpacity>
+        </View>
+      </Animated.View>
     </View>
   );
 };
