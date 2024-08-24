@@ -24,7 +24,6 @@ const Page = () => {
   const [email, setEmail] = useState(user?.emailAddresses[0].emailAddress);
   const [edit, setEdit] = useState(false);
 
-  // Load user data on mount
   useEffect(() => {
     if (!user) {
       return;
