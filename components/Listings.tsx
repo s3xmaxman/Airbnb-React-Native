@@ -25,7 +25,6 @@ const Listings = ({ listings: items, refresh, category }: Props) => {
   const listRef = useRef<BottomSheetFlatListMethods>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
-  // Update the view to scroll the list back top
   useEffect(() => {
     if (refresh) {
       scrollListTop();
